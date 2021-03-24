@@ -1,5 +1,5 @@
-# Translator Obscura is a translator bot for not-so-common languages. Created by Cameron Hill.
-# This version of Translator Obscura is written in Python and was last updated on 03/23/2021
+# Translator Obscura is a translator discord bot for not-so-common "languages". Created by Cameron Hill.
+# This version of Translator Obscura is written in Python and was last updated on 03/24/2021
 import discord
 import os
 from keep_alive import keep_alive
@@ -24,7 +24,7 @@ def to_al_bhed(phrase):
   return result
 
 
-  # From Al Bhed
+# From Al Bhed
 def from_al_bhed(phrase):
   phrase = phrase.replace('albhed.to ', '')
   result = ''
@@ -39,6 +39,17 @@ def from_al_bhed(phrase):
           result += dict_a.get(letter)
       else:
           result += letter
+  return result
+
+
+# To Bmoji
+def to_bmoji(phrase):
+  phrase = phrase.replace('to.bmoji ', '')
+  result = ''
+  words = str(phrase).split()
+  for word in words:
+    result += word[0].replace(word[0], ":b:") + word[1:] + " "
+
   return result
 
 
@@ -107,16 +118,21 @@ def from_pig_latin(phrase):
       return result.strip()
 
 
+# Discord connection notification
 @client.event
 async def on_ready():
   print('Logged in as {0.user}'.format(client))
 
+
+# Detect commands
 @client.event
 async def on_message(message):
   if message.author == client.user:
     return
   elif message.content.startswith('to.albhed'):
     await message.channel.send(to_al_bhed(message.content))
+  elif message.content.startswith('to.b'):
+    await message.channel.send(to_bmoji(message.content))
   elif message.content.startswith('to.cipher'):
     await message.channel.send(to_cipher(message.content))
   elif message.content.startswith('to.piglatin'):
@@ -131,9 +147,15 @@ async def on_message(message):
     await message.channel.send('I am a translator bot for not-so-common languages.\n'
     'Here is a list of my available translations, and the command used to invoke them:\n'
     '\n'
-    'Al Bhed - `to.albhed Hello!` or `albhed.to Rammu!`\n'
-    'Cipher - `to.cipher 3 Hello!` or `cipher.to 3 Jhoor!` (Requires a single digit number to use as a key)\n'
-    'Pig Latin - `to.piglatin Hello!` or `piglatin.to Ellohay!`\n')
+    'Al Bhed - `to.albhed Hello!` OR `albhed.to Rammu!`\n'
+    "Bmoji - `to.bmoji Hello!` (This translation only works one way. There's no coming back from :b:.)\n"
+    'Cipher - `to.cipher 3 Hello!` OR `cipher.to 3 Jhoor!` (Requires a positive single digit number as a key)\n'
+    'Pig Latin - `to.piglatin Hello!` OR `piglatin.to Ellohay!`\n')
 
+
+# Keep replit running with pings
 keep_alive()
+
+
+# Pulls bot token form .env
 client.run(os.getenv('TOKEN'))
